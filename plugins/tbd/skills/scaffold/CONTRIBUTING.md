@@ -4,7 +4,10 @@ For Claude sessions and humans alike. `scaffold` is one skill of the **tbd**
 plugin, which lives in its own git repository, the *dev repo*:
 
 - On Tobi's PC: `C:\Users\Tobi\Documents\tbd`
-- Anywhere else: `git clone git@github.com:Toastgeraet/tbd.git`
+- Anywhere else: `git clone git@github.com:Toastgeraet/tbd.git`. In a Claude
+  cloud session, attach `Toastgeraet/tbd` to the session with push access
+  first (`add_repo`), or the GitHub proxy won't serve it — see
+  [reference/claude-cloud.md](reference/claude-cloud.md#editing-the-skill-from-a-cloud-session).
 
 This skill is at `plugins/tbd/skills/scaffold/` in it; every path below is
 relative to that folder.

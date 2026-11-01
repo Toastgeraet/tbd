@@ -35,9 +35,18 @@ their own.
 If `claude` is not on your PATH, the desktop app bundles one at
 `%APPDATA%\Claude\claude-code\<version>\<hash>\claude.exe`.
 
-### On the machine you develop on
+### Cloud sessions
 
-Register the dev folder instead of GitHub:
+**This install does not reach Claude cloud sessions.** A cloud session loads no
+plugin you install yourself — neither one installed on your machine nor one a
+repository's `.claude/settings.json` declares. The options for getting the skills
+there, none tried yet, are in
+[plugins/tbd/skills/scaffold/reference/claude-cloud.md](plugins/tbd/skills/scaffold/reference/claude-cloud.md#getting-this-skill-into-a-cloud-session).
+
+### Optional: load from a local clone
+
+To see edits without pushing, register a clone of this repository instead of
+GitHub:
 
 ```text
 /plugin marketplace add C:\Users\Tobi\Documents\tbd
@@ -51,12 +60,25 @@ or the GitHub one.
 
 ## Update
 
-```text
-/plugin marketplace update toastgeraet
+Turn on auto-update once per machine, and sessions pick up new commits by
+themselves: a few minutes after the first message, Claude Code fetches the
+marketplace and shows "Plugin updated: tbd · Run /reload-plugins to apply".
+Auto-update is **off by default** for marketplaces like this one. Either use
+`/plugin` → **Marketplaces** → `toastgeraet` → **Enable auto-update**, or set it
+in `~/.claude/settings.json`:
+
+```json
+"extraKnownMarketplaces": {
+  "toastgeraet": {
+    "source": { "source": "github", "repo": "Toastgeraet/tbd" },
+    "autoUpdate": true
+  }
+}
 ```
 
-Or turn on auto-update once — `/plugin` → **Marketplaces** → `toastgeraet` →
-**Enable auto-update** — and sessions pick up new commits by themselves.
+To update right away: `/plugin marketplace update toastgeraet` in a session, or
+`claude plugin update tbd@toastgeraet` from a shell. (`claude plugin marketplace
+update` without a name refreshes the listing only, not the installed plugin.)
 
 `plugin.json` deliberately has **no `version`**, so every pushed commit counts as
 an update. If you ever add a `version`, nobody receives a change until you bump it.

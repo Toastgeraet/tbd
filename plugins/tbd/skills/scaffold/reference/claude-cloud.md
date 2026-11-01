@@ -1,6 +1,9 @@
 # Claude cloud sessions — what they can and cannot do
 
-> **Status:** proven where marked (from reading-tracker, Expo, 2026-10-06 to 2026-11-01) · researched otherwise · **Last checked:** 2026-11-01
+> **Status:** proven where marked (from reading-tracker, Expo, 2026-10-06 to
+> 2026-11-01) · researched otherwise — the researched parts were checked against
+> the Claude Code docs on 2026-11-01 (code.claude.com: cloud-environments,
+> plugins/install, plugins/loading, skills) · **Last checked:** 2026-11-01
 
 Stack-independent facts about developing in a Claude cloud session connected to
 GitHub. The `expo-android` stack was built almost entirely this way; its
@@ -10,16 +13,34 @@ GitHub. The `expo-android` stack was built almost entirely this way; its
 
 - A Linux container managed by Anthropic, with the GitHub repository cloned into
   it. The session can commit, push branches and open pull requests. **proven**
+  The docs specify a fresh VM per session, Ubuntu 24.04 on x86_64 — use x86_64
+  Linux builds of any binary tool. *researched*
 - **Ephemeral.** Each new session starts clean: `node_modules` and anything else
   installed is gone. A committed SessionStart hook in `.claude/settings.json` can
   reinstall; guard it with `[ "$CLAUDE_CODE_REMOTE" = "true" ]` so it never runs
   on the user's PC. `npm ci` took about 20 seconds for an Expo app. **proven**
   (hook verified on a clean copy)
+- **Setup scripts and caching.** An environment can also run a Bash setup script
+  before Claude Code starts. If it finishes within about five minutes, the
+  filesystem is snapshotted and later sessions start from that snapshot, skipping
+  the script; the snapshot is rebuilt when the script changes and about every
+  seven days. Use it for toolchains; use a SessionStart hook for per-project
+  setup that should also run locally. *researched*
 - **Outbound traffic goes through a proxy.** In reading-tracker's environment the
   npm registry and GitHub worked, but some vendor APIs and doc sites were refused
   (`api.expo.dev`: "HTTP Proxy Network Error: Forbidden"; `curl` to
   docs.expo.dev: "CONNECT tunnel failed, response 403"). Look for the tool's
   offline mode first (`EXPO_OFFLINE=1`), then a connector. **proven**
+  This matches the documented default network level, *Trusted*: package
+  registries, GitHub and cloud SDKs only. The *Custom* level takes your own domain
+  list and could admit hosts like these. *researched*
+- **GitHub goes through its own proxy**, which holds the real credentials. It
+  refuses tag pushes and branch deletions. GitHub API requests work only for
+  repositories *attached to the session*, and source archives
+  (`github.com/<owner>/<repo>/archive/…`, `codeload.github.com`) of unattached
+  repositories are refused even when public. `gh` is pre-installed, but GraphQL
+  subcommands (`gh pr`, `gh issue`) are refused; `gh api` (REST) works.
+  *researched*
 - **Preinstalled** (reading-tracker's container): Node 22.22, npm 10.9, Python 3,
   Playwright 1.56.1 under `/opt/node-tools`, Chromium under `/opt/pw-browsers`
   (don't run `playwright install`). Enough for headless browser screenshots of
@@ -28,6 +49,20 @@ GitHub. The `expo-android` stack was built almost entirely this way; its
   is slow. Headless Chromium screenshots worked fine. **proven** for the browser
 - **No hardware virtualisation** (as far as known), so Android emulators are out.
   Testing on a real device stays with the user.
+
+## What a cloud session loads from your setup
+
+*researched* (docs, 2026-11-01):
+
+| Source | Loads in a cloud session? |
+| --- | --- |
+| Repo `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/` | Yes — part of the clone (a *project's* cloud threads load less) |
+| Repo `.claude/settings.json` hooks and permissions, `.mcp.json` | Yes, in a session with one repository |
+| Plugins and marketplaces declared in the repo's `.claude/settings.json` | **No** — this needs the workspace-trust dialog, which cloud sessions never show |
+| Plugins installed on your machine (`~/.claude/settings.json`) | **No** |
+| Your `~/.claude/CLAUDE.md` and `~/.claude/skills/` | **No** — they live on your machine |
+| Skills enabled on your claude.ai account | **Yes**, synced at session start |
+| Organisation server-managed settings, including plugins | Yes — needs a Team/Enterprise Owner |
 
 ## Reaching services without putting secrets in the session
 
@@ -80,28 +115,57 @@ with every build and update ID, roadmap, decisions already made, plans) and a
 project skill for shipping, let fresh sessions continue features and releases
 without re-asking.
 
-## Using this skill in a cloud session
+## This skill and cloud sessions
 
-This skill ships in the `tbd` plugin. Plugins installed for the user on their PC
-are **not** present in a cloud session. The documented way to give one repository
-the plugin is to register the marketplace at project scope and commit the result:
-
-```bash
-claude plugin marketplace add Toastgeraet/tbd --scope project   # writes .claude/settings.json
-```
-
-The repository is public, so the clone needs no credentials. Still untested in a
-cloud session — record here what actually works.
+### Editing the skill from a cloud session
 
 **proven** (attach, clone, edit; 2026-11-01): to *edit* the skill from a cloud
 session working in another project, attach the dev repo to the session
 (`add_repo` for `Toastgeraet/tbd` with push access), clone it next to the
 project, edit and commit there. The `expo-android` stack was written up this way.
 
+### Using the skill in a cloud session
+
+This skill ships in the `tbd` plugin, and by the table above **a plugin you
+install yourself never reaches a cloud session** — not from your machine, not
+from a repository's settings. Options, none tried yet:
+
+1. **Enable the skill on your claude.ai account** — upload it via *Customize* in
+   the desktop app's sidebar, or claude.ai's skill settings. This is the
+   documented route. It then loads in cloud sessions, and terminal sessions
+   signed in with that account sync it into `~/.claude/skills/synced/`. Open
+   questions and costs:
+   - Upload accepts only the frontmatter keys `name`, `description`, `license`,
+     `compatibility`, `metadata` and `allowed-tools`. This SKILL.md uses only the
+     first two.
+   - Whether a multi-file skill — this one has dozens of files in subfolders,
+     templates included — uploads intact is not documented.
+   - It is a second update path: every change needs a re-upload, separate from
+     git and `/plugin`.
+   - It loads as `scaffold`, not `tbd:scaffold`, and would load twice on a
+     machine that also has the plugin.
+2. **An environment setup script** that fetches this repository inside the VM and
+   either runs `claude plugin marketplace add Toastgeraet/tbd` plus
+   `claude plugin install tbd@toastgeraet`, or copies the skill into
+   `~/.claude/skills/scaffold/`. The docs show a setup script writing
+   `~/.claude/CLAUDE.md` and that file being loaded; whether plugins or skills
+   written the same way load is not documented. Catches: the GitHub proxy may
+   refuse to clone a repository that isn't attached to the session (attaching it
+   worked for editing, above), and the cached snapshot means updates can lag by
+   up to a week unless the script changes.
+3. **Commit a copy into a project's `.claude/skills/`.** Loads for that repository,
+   but every copy drifts from the source — avoid it for a living skill.
+4. **Organisation managed settings** — only with a Team or Enterprise plan and an
+   Owner role.
+
+Try option 1 first. When something works, record it here as **proven** and
+update the install section of the repository README.
+
 ## Before relying on the cloud for a new stack, find out
 
 1. Which toolchain downloads it needs, their size, and whether the proxy allows
-   them (or whether the tool has an offline mode).
+   them (or whether the tool has an offline mode) — and whether a setup script
+   can install them within five minutes so the environment caches.
 2. Whether tests can run headless on CPU.
 3. What has to build elsewhere, how the session starts it (connector, CI), and
    how the artefact reaches the user.
