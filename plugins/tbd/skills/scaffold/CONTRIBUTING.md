@@ -1,17 +1,29 @@
 # Contributing to the scaffold skill
 
-For Claude sessions and humans alike. The skill is a git repository installed at
-`~/.claude/skills/scaffold` — the install *is* the clone — so you edit it in place
-and commit there:
+For Claude sessions and humans alike. `scaffold` is one skill of the **tbd**
+plugin, which lives in its own git repository, the *dev repo*:
+
+- On Tobi's PC: `C:\Users\Tobi\Documents\claude-tbd`
+- Anywhere else: `git clone git@github.com:Toastgeraet/claude-tbd.git`
+
+This skill is at `plugins/tbd/skills/scaffold/` in it; every path below is
+relative to that folder.
+
+**Edit the dev repo, never the installed copy.** Claude Code installs plugins into
+a cache under `~/.claude/plugins/` and replaces that copy on every update, so edits
+there are silently lost. If this skill's base directory is under
+`~/.claude/plugins/`, you are looking at the cache.
 
 ```bash
-git -C ~/.claude/skills/scaffold status
-git -C ~/.claude/skills/scaffold add -A
-git -C ~/.claude/skills/scaffold commit -m "stacks/<id>: <what changed>"
+DEV=~/Documents/claude-tbd        # wherever the dev repo is cloned
+git -C "$DEV" status
+git -C "$DEV" add -A
+git -C "$DEV" commit -m "scaffold/<stack-id>: <what changed>"
 ```
 
-Ask the user before editing, and push only when asked. Other machines then pick the
-change up with `scripts/update.ps1` or `scripts/update.sh`.
+Ask the user before editing, and push only when asked. Once pushed, every machine
+picks the change up with `/plugin marketplace update toastgeraet`, or by itself if
+auto-update is on for the marketplace.
 
 ## What belongs here
 
@@ -71,7 +83,7 @@ or correct it.
    "not yet written up" row.
 6. Cloud facts — what built where, what network access was needed — go in the
    stack *and*, if they generalise, in `reference/claude-cloud.md`.
-7. Commit with `stacks/<id>: add stack`.
+7. Commit with `scaffold/<id>: add stack`.
 
 ## Updating a stack
 
@@ -93,8 +105,10 @@ built something with it — is the best author. Paste this there, with the
 placeholders filled in:
 
 ```text
-Read ~/.claude/skills/scaffold/CONTRIBUTING.md and SKILL.md. Then write up the
-stack this project uses as a new stack in that skill, id `<stack-id>`:
+Read CONTRIBUTING.md and SKILL.md of the tbd:scaffold skill, then edit them in
+the plugin's dev repo, not the installed copy: C:\Users\Tobi\Documents\claude-tbd
+on Tobi's PC, otherwise clone git@github.com:Toastgeraet/claude-tbd.git. Write up
+the stack this project uses as a new stack in that skill, id `<stack-id>`:
 
 - Copy stacks/_template to stacks/<stack-id> and fill it in from what this
   project actually did: versions, the setup steps in order, how it is built
@@ -109,7 +123,7 @@ stack this project uses as a new stack in that skill, id `<stack-id>`:
 - Never copy secrets; record where they live instead.
 - Update the stack's row in the SKILL.md index.
 
-Show me the changes before committing them in ~/.claude/skills/scaffold.
+Show me the changes before committing them in the dev repo.
 ```
 
 For the reading tracker, use the id `expo-android`. Its row already exists in the

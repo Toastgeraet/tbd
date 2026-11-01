@@ -6,7 +6,7 @@
 
 ```bash
 GODOT="/c/Program Files/Godot/Godot_v4.7.2-stable_win64_console.exe"   # see README for other machines
-T=~/.claude/skills/scaffold/stacks/godot/templates
+T="$SKILL_DIR/stacks/godot/templates"   # SKILL_DIR: this skill's base directory, shown when it loads
 DEST=~/Documents/<folder-name>
 NAME="<Display Name>"
 

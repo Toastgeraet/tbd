@@ -9,8 +9,10 @@ A living library of stacks that have actually been built with, plus the procedur
 for starting a new project from one. It is only worth anything while it stays
 true, so every session that learns something about a stack writes it back (step 6).
 
-This skill's directory is a git repository. Edits to it are commits there — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+This skill is part of the `tbd` plugin, which is developed in its own git
+repository. Edits go there, **never into the installed copy** — see
+[CONTRIBUTING.md](CONTRIBUTING.md). Paths in this skill are relative to its base
+directory, which Claude Code shows when the skill loads; commands call it `$SKILL_DIR`.
 
 ## Stack index
 
@@ -78,8 +80,8 @@ sensible next steps. Make the initial commit only if the user agreed to it in st
 
 At the end of a scaffold, and whenever a session in *any* project hits something
 non-obvious about a stack, update the stack docs following
-[CONTRIBUTING.md](CONTRIBUTING.md). Ask the user before editing, commit in this
-skill's repository, and push only when asked.
+[CONTRIBUTING.md](CONTRIBUTING.md). Ask the user before editing, commit in the
+plugin's dev repository, and push only when asked.
 
 What is worth writing back: anything that cost time, contradicted an assumption,
 or would have changed a decision. Not generic tutorial material.

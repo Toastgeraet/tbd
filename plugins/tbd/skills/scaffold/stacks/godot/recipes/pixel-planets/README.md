@@ -23,7 +23,7 @@ DST=assets/pixel_planets
 mkdir -p "$DST" && cp -r "$SRC/Planets/." "$DST/" && cp "$SRC/LICENSE" "$DST/"
 rmdir "$DST/Moon" 2>/dev/null || true                       # empty upstream folder
 grep -rl 'res://Planets/' "$DST" | xargs sed -i 's|res://Planets/|res://assets/pixel_planets/|g'
-mkdir -p scripts/planets && cp ~/.claude/skills/scaffold/stacks/godot/recipes/pixel-planets/*.gd scripts/planets/
+mkdir -p scripts/planets && cp "$SKILL_DIR"/stacks/godot/recipes/pixel-planets/*.gd scripts/planets/
 ```
 
 Then two fixes to the vendored copy:

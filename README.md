@@ -1,74 +1,85 @@
-# scaffold — a living Claude Code skill for starting projects
+# tbd — Tobias Bergmann Development
 
-Ask Claude to start a new project and this skill asks what you want to build —
-an Android app, a Godot game, both, a web project, a service — then sets it up
-from a stack that has already been proven, rather than rediscovering the setup
-each time. Every project that teaches something new about its stack writes that
-back here, so the next one starts further ahead.
+A Claude Code plugin of living skills. Each skill is called `/tbd:<skill>`, and
+each one grows as projects teach it something.
 
-| Stack | Status |
+| Skill | What it does |
 | --- | --- |
-| Godot 4 game | proven (desktop, web, headless tests); Android and cloud builds researched |
-| Expo Android app | proven in the reading tracker; not yet written up |
+| `/tbd:scaffold` | Asks what you want to build — Android app, Godot game, both, web project, service — and sets it up from a stack that has already been proven. Godot is proven (desktop, web, headless tests); Expo Android is proven in the reading tracker but not written up yet. |
+
+You don't need to type the command: "start a new Godot game" triggers it too.
 
 ## Install
 
-Claude Code loads personal skills from `~/.claude/skills/<name>/SKILL.md`. The
-install **is** a clone of this repository at that path — one copy, edited in
-place, nothing to keep in sync.
+This repository is a plugin **marketplace** named `toastgeraet`, holding one
+plugin, `tbd`. In a Claude Code session:
 
-Windows (PowerShell):
-
-```powershell
-git clone git@github.com:Toastgeraet/claude-scaffold.git "$HOME\.claude\skills\scaffold"
+```text
+/plugin marketplace add Toastgeraet/claude-tbd
+/plugin install tbd@toastgeraet
 ```
 
-macOS / Linux / a cloud session's setup script:
+Or from a shell:
 
 ```bash
-git clone git@github.com:Toastgeraet/claude-scaffold.git ~/.claude/skills/scaffold
+claude plugin marketplace add Toastgeraet/claude-tbd
+claude plugin install tbd@toastgeraet
 ```
 
-New sessions pick it up; a running session usually notices it within moments. It
-must sit at exactly `~/.claude/skills/scaffold` — `SKILL.md` has to be one level
-below `skills/`.
+The repository is private, so Claude Code clones it with your own git
+credentials, without prompting. Over SSH, the key must be usable without a
+passphrase prompt (loaded in `ssh-agent`). Over HTTPS, set
+`CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` and store a credential first
+(`gh auth login`, then `gh auth setup-git`).
+
+If `claude` is not on your PATH, the desktop app bundles one at
+`%APPDATA%\Claude\claude-code\<version>\<hash>\claude.exe`.
+
+### On the machine you develop on
+
+Register the dev folder instead of GitHub:
+
+```text
+/plugin marketplace add C:\Users\Tobi\Documents\claude-tbd
+/plugin install tbd@toastgeraet
+```
+
+Claude Code then loads the plugin **in place**: edits take effect at the next
+session start or after `/reload-plugins`, with no push and no update step. A
+machine can register only one marketplace named `toastgeraet`, so use either this
+or the GitHub one.
 
 ## Update
 
-```powershell
-~\.claude\skills\scaffold\scripts\update.ps1
+```text
+/plugin marketplace update toastgeraet
 ```
 
-```bash
-~/.claude/skills/scaffold/scripts/update.sh
-```
+Or turn on auto-update once — `/plugin` → **Marketplaces** → `toastgeraet` →
+**Enable auto-update** — and sessions pick up new commits by themselves.
 
-Both fetch, refuse to touch uncommitted edits, warn about local commits that
-haven't been pushed (knowledge other machines are missing), and fast-forward to
-the latest version.
+`plugin.json` deliberately has **no `version`**, so every pushed commit counts as
+an update. If you ever add a `version`, nobody receives a change until you bump it.
 
-## Use
+## Develop
 
-Say what you want — "start a new Godot game", "set up a new project" — or type
-`/scaffold`.
-
-## Extend it
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md). The short version: copy
-`stacks/_template` to `stacks/<id>`, fill it in from a project that really did it,
-label everything proven / verified / researched, add a row to the index in
-[SKILL.md](SKILL.md), and commit here.
-
-The best author for a stack is a session in a project that already uses it.
-CONTRIBUTING.md has a prompt to paste into that session.
+- Skills live in `plugins/tbd/skills/<name>/SKILL.md`. A new folder there
+  becomes `/tbd:<name>`; add it to the table above.
+- Each skill can have its own contributing guide. The scaffold skill's is
+  [plugins/tbd/skills/scaffold/CONTRIBUTING.md](plugins/tbd/skills/scaffold/CONTRIBUTING.md),
+  including a prompt for writing a stack up from another project's session.
+- **Edit this repository, never the installed copy** in `~/.claude/plugins/` —
+  updates replace it.
+- Check the structure after changes: `claude plugin validate .` and
+  `claude plugin validate ./plugins/tbd`. Expect exactly one warning, "No version
+  specified" — that is the deliberate choice above.
+- Try a change without installing anything:
+  `claude --plugin-dir ./plugins/tbd plugin details tbd` lists the skills it finds.
 
 ## Layout
 
 ```
-SKILL.md                  entry point: the workflow and the stack index
-CONTRIBUTING.md           how to add and update stacks; status labels
-stacks/_template/         starting point for a new stack
-stacks/godot/             Godot 4: docs, templates/, recipes/
-reference/                cross-stack: workflow preferences, Claude cloud, process
-scripts/update.(ps1|sh)   pull the latest version safely
+.claude-plugin/marketplace.json     the marketplace "toastgeraet"
+plugins/tbd/.claude-plugin/plugin.json
+plugins/tbd/skills/scaffold/        SKILL.md, CONTRIBUTING.md, stacks/, reference/
 ```

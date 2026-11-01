@@ -1,0 +1,14 @@
+{
+  "name": "toastgeraet",
+  "description": "Tobias Bergmann's Claude Code plugins",
+  "owner": {
+    "name": "Tobias Bergmann"
+  },
+  "plugins": [
+    {
+      "name": "tbd",
+      "source": "./plugins/tbd",
+      "description": "tbd - Tobias Bergmann Development: skills for starting and running projects the way they have already been proven to work"
+    }
+  ]
+}

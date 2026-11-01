@@ -33,10 +33,17 @@ to the user's device.
 
 ## Using this skill in a cloud session
 
-Skills installed in `~/.claude/skills` on the user's PC are **not** present in a
-cloud session. An untested option: have the environment's setup script clone this
-repository into `~/.claude/skills/scaffold`. A private repository would need
-credentials in that script. Record here what actually works.
+This skill ships in the `tbd` plugin. Plugins installed for the user on their PC
+are **not** present in a cloud session. The documented way to give one repository
+the plugin is to register the marketplace at project scope and commit the result:
+
+```bash
+claude plugin marketplace add Toastgeraet/claude-tbd --scope project   # writes .claude/settings.json
+```
+
+Untested: whether a cloud session can clone the *private* `claude-tbd` repository
+that way. It clones with whatever git credentials the session has. Record here what
+actually works.
 
 ## Before relying on the cloud for a new stack, find out
 
