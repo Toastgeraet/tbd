@@ -11,6 +11,25 @@ each one grows as projects teach it something.
 You don't need to type the commands: "start a new Godot game" or "anything from
 this session worth adding to tbd?" trigger them too.
 
+## What `/tbd:scaffold` can set up
+
+Each project type is backed by a **stack**: a write-up plus templates taken from a
+real project. Status labels say how far each part has been tried — **proven**
+(done end-to-end in a real project), **verified** (throwaway test only),
+**researched** (believed true, never run).
+
+| Project type | Stack | What you get | Status |
+| --- | --- | --- | --- |
+| **2D / UI-heavy game** — simulation, management, trading, menu-driven | [`godot`](plugins/tbd/skills/scaffold/stacks/godot/README.md) | Godot 4, GDScript only, GL Compatibility renderer: main menu and game scenes, theme, controller input, a headless test suite Claude can run without the editor, and a web export served locally. Recipe for procedural pixel planets. | **proven**: desktop, web export, headless tests · **researched**: Android export, cloud/CI builds |
+| **Android app** — UI plus local data, built and shipped from the phone | [`expo-android`](plugins/tbd/skills/scaffold/stacks/expo-android/README.md) | Expo + Expo Router in strict TypeScript, developed from Claude cloud sessions: APKs built on EAS, JS changes pushed to installed phones as OTA updates, tests, lint, web-preview screenshots, GitHub checks. | **proven**: scaffold, EAS builds, OTA updates · **researched**: Play Store, iOS |
+| **App + game combined** | both of the above | Three options, cheapest first: Godot only (app screens in `Control` nodes), separate app and game sharing a backend, or an Expo/native app embedding Godot. The skill asks what forces the choice and recommends one. | **researched** — nothing combined has been built yet |
+| **Anything else** — web project, backend service, CLI, library, desktop app | none yet | The skill says no stack matches, proposes one with reasons, lets you choose, and offers to record the result as a new stack once it works. | **researched** until a project proves it |
+
+The live index is in
+[plugins/tbd/skills/scaffold/SKILL.md](plugins/tbd/skills/scaffold/SKILL.md#stack-index);
+new stacks start from
+[stacks/_template/](plugins/tbd/skills/scaffold/stacks/_template/README.md).
+
 ## Install
 
 This repository is a plugin **marketplace** named `toastgeraet`, holding one
@@ -99,6 +118,8 @@ an update. If you ever add a `version`, nobody receives a change until you bump 
 - Each skill can have its own contributing guide. The scaffold skill's is
   [plugins/tbd/skills/scaffold/CONTRIBUTING.md](plugins/tbd/skills/scaffold/CONTRIBUTING.md),
   including a prompt for writing a stack up from another project's session.
+  A new or promoted stack also gets a row in
+  [What `/tbd:scaffold` can set up](#what-tbdscaffold-can-set-up).
 - **Edit this repository, never the installed copy** in `~/.claude/plugins/` —
   updates replace it.
 - Check the structure after changes: `claude plugin validate .` and
