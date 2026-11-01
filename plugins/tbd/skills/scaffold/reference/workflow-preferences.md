@@ -28,3 +28,15 @@ works; note the date and the reason.
   visual work, and say plainly which parts were not checked.
 - When asked a question ("is it possible…?"), answer it. Don't start building
   until asked ("not yet" means not yet).
+- **Native builds on the PC, from a cloud session:** asked how the APK should be
+  delivered, the user chose "source only" over building in the container or
+  in CI. They export from the editor. Near the session's usage limit, they asked
+  for "all the steps I can and must do on my PC" — give a numbered, copy-paste
+  list with exact paths, and expect follow-up screenshots of the editor's error
+  lines. (2026-11, rechen-trainer)
+- **Releases:** SemVer tags `vX.Y.Z` (annotated), matching the app's version
+  name; a GitHub Release with the APK attached, marked *Pre-release* while it is
+  debug-signed. (2026-11)
+- **Answers questions with screenshots** of the editor or GitHub ("which export
+  button?", "does this look okay?"). Answer what the screenshot shows: name the
+  exact button or line.
