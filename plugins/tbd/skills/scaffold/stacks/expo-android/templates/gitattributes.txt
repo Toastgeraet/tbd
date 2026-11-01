@@ -1,0 +1,9 @@
+# Always check out text files with LF line endings, also on Windows (core.autocrlf=true).
+# The EAS Update runtime fingerprint hashes file contents (app.json, eas.json, .gitignore, …), so CRLF
+# checkouts produce a different runtime version and OTA updates published from Windows never reach the APK.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.ttf binary

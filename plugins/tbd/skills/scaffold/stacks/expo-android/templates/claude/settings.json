@@ -1,0 +1,18 @@
+{
+  "enabledPlugins": {
+    "expo@claude-plugins-official": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] && [ ! -d \"$CLAUDE_PROJECT_DIR/node_modules\" ]; then cd \"$CLAUDE_PROJECT_DIR\" && npm ci --no-audit --no-fund >/dev/null 2>&1 && echo 'Installed npm dependencies.' || echo 'npm ci failed; run npm install manually.'; fi",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  }
+}

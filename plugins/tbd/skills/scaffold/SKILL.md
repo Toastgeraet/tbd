@@ -19,7 +19,7 @@ directory, which Claude Code shows when the skill loads; commands call it `$SKIL
 | id | Builds | Status | Start here |
 | --- | --- | --- | --- |
 | `godot` | 2D and UI-heavy games: desktop, web; Android and cloud builds researched | **proven** (desktop, web, headless tests) | [stacks/godot/README.md](stacks/godot/README.md) |
-| `expo-android` | Android app with Expo, built mostly in the cloud | **not yet written up** — proven in the user's reading tracker project | — |
+| `expo-android` | Android app with Expo, developed from Claude cloud sessions; EAS builds APKs, OTA updates published from the cloud | **proven** (scaffold, EAS builds, OTA updates); Play Store and iOS researched | [stacks/expo-android/README.md](stacks/expo-android/README.md) |
 
 Statuses (defined in [CONTRIBUTING.md](CONTRIBUTING.md#status-labels)):
 

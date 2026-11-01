@@ -1,0 +1,43 @@
+# Publishes an OTA update (Android, channel "preview") from the git ref the run is started on.
+# No `on:` trigger, so it only runs when started by hand: the Expo connector's `workflow_run`
+# (fileName publish-update.yml, gitRef = branch), the expo.dev dashboard, or `eas workflow:run`.
+#
+# Safety net: it only publishes if an APK with exactly this commit's fingerprint exists. If the change
+# needs a new APK, nothing is published and the run fails with "needs_new_apk".
+# The update message is the latest commit message of the ref.
+name: Publish OTA update
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: preview
+
+  get_build:
+    name: Find APK with matching fingerprint
+    needs: [fingerprint]
+    type: get-build
+    params:
+      platform: android
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+
+  publish:
+    name: Publish update (Android, preview)
+    needs: [get_build]
+    if: ${{ needs.get_build.outputs.build_id }}
+    type: update
+    environment: preview
+    params:
+      channel: preview
+      platform: android
+
+  needs_new_apk:
+    name: No APK with this fingerprint, needs a new APK
+    needs: [fingerprint, get_build]
+    if: ${{ !needs.get_build.outputs.build_id }}
+    steps:
+      - run: |
+          echo "No preview APK has fingerprint ${{ needs.fingerprint.outputs.android_fingerprint_hash }}."
+          echo "This change needs a new APK. Nothing was published."
+          exit 1

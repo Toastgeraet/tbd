@@ -1,0 +1,23 @@
+# Runs tests, typecheck and lint on every push and pull request. Publish OTA updates only from a commit
+# whose checks passed: a broken bundle would reach every installed phone.
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # node --test runs the TypeScript tests directly, which needs Node 22.18 or newer.
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npx tsc --noEmit
+      - run: npx expo lint
