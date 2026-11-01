@@ -80,8 +80,8 @@ sensible next steps. Make the initial commit only if the user agreed to it in st
 
 At the end of a scaffold, and whenever a session in *any* project hits something
 non-obvious about a stack, update the stack docs following
-[CONTRIBUTING.md](CONTRIBUTING.md). Ask the user before editing, commit in the
-plugin's dev repository, and push only when asked.
+[CONTRIBUTING.md](CONTRIBUTING.md). Offer `/tbd:contribute`, which turns what the
+user picks into a pull request on the plugin's dev repository.
 
 What is worth writing back: anything that cost time, contradicted an assumption,
 or would have changed a decision. Not generic tutorial material.
