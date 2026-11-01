@@ -38,12 +38,11 @@ are **not** present in a cloud session. The documented way to give one repositor
 the plugin is to register the marketplace at project scope and commit the result:
 
 ```bash
-claude plugin marketplace add Toastgeraet/claude-tbd --scope project   # writes .claude/settings.json
+claude plugin marketplace add Toastgeraet/tbd --scope project   # writes .claude/settings.json
 ```
 
-Untested: whether a cloud session can clone the *private* `claude-tbd` repository
-that way. It clones with whatever git credentials the session has. Record here what
-actually works.
+The repository is public, so the clone needs no credentials. Still untested in a
+cloud session — record here what actually works.
 
 ## Before relying on the cloud for a new stack, find out
 

@@ -3,8 +3,8 @@
 For Claude sessions and humans alike. `scaffold` is one skill of the **tbd**
 plugin, which lives in its own git repository, the *dev repo*:
 
-- On Tobi's PC: `C:\Users\Tobi\Documents\claude-tbd`
-- Anywhere else: `git clone git@github.com:Toastgeraet/claude-tbd.git`
+- On Tobi's PC: `C:\Users\Tobi\Documents\tbd`
+- Anywhere else: `git clone git@github.com:Toastgeraet/tbd.git`
 
 This skill is at `plugins/tbd/skills/scaffold/` in it; every path below is
 relative to that folder.
@@ -15,7 +15,7 @@ there are silently lost. If this skill's base directory is under
 `~/.claude/plugins/`, you are looking at the cache.
 
 ```bash
-DEV=~/Documents/claude-tbd        # wherever the dev repo is cloned
+DEV=~/Documents/tbd        # wherever the dev repo is cloned
 git -C "$DEV" status
 git -C "$DEV" add -A
 git -C "$DEV" commit -m "scaffold/<stack-id>: <what changed>"
@@ -41,10 +41,11 @@ Leave out:
 
 - Generic tutorial material Claude already knows.
 - Business logic of the project the knowledge came from.
-- **Secrets.** Never commit keystores, signing passwords, API tokens or
-  `.env` contents. Write down *where* a secret lives and how it is provided
-  (for example "EAS token is a GitHub Actions secret named `EXPO_TOKEN`"), never
-  the value.
+- **Secrets, and anything you wouldn't publish.** The repository is public on
+  GitHub. Never commit keystores, signing passwords, API tokens or `.env`
+  contents. Write down *where* a secret lives and how it is provided (for
+  example "EAS token is a GitHub Actions secret named `EXPO_TOKEN`"), never the
+  value. Keep private project details out too.
 
 ## Status labels
 
@@ -106,8 +107,8 @@ placeholders filled in:
 
 ```text
 Read CONTRIBUTING.md and SKILL.md of the tbd:scaffold skill, then edit them in
-the plugin's dev repo, not the installed copy: C:\Users\Tobi\Documents\claude-tbd
-on Tobi's PC, otherwise clone git@github.com:Toastgeraet/claude-tbd.git. Write up
+the plugin's dev repo, not the installed copy: C:\Users\Tobi\Documents\tbd
+on Tobi's PC, otherwise clone git@github.com:Toastgeraet/tbd.git. Write up
 the stack this project uses as a new stack in that skill, id `<stack-id>`:
 
 - Copy stacks/_template to stacks/<stack-id> and fill it in from what this

@@ -15,22 +15,22 @@ This repository is a plugin **marketplace** named `toastgeraet`, holding one
 plugin, `tbd`. In a Claude Code session:
 
 ```text
-/plugin marketplace add Toastgeraet/claude-tbd
+/plugin marketplace add Toastgeraet/tbd
 /plugin install tbd@toastgeraet
 ```
 
 Or from a shell:
 
 ```bash
-claude plugin marketplace add Toastgeraet/claude-tbd
+claude plugin marketplace add Toastgeraet/tbd
 claude plugin install tbd@toastgeraet
 ```
 
-The repository is private, so Claude Code clones it with your own git
-credentials, without prompting. Over SSH, the key must be usable without a
-passphrase prompt (loaded in `ssh-agent`). Over HTTPS, set
-`CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` and store a credential first
-(`gh auth login`, then `gh auth setup-git`).
+The repository is public, so no credentials are needed. Claude Code clones over
+SSH when the machine has a GitHub SSH key, and over HTTPS otherwise — but on a
+machine with **no** GitHub SSH key, set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`,
+because installs and updates started inside a session don't fall back to HTTPS on
+their own.
 
 If `claude` is not on your PATH, the desktop app bundles one at
 `%APPDATA%\Claude\claude-code\<version>\<hash>\claude.exe`.
@@ -40,7 +40,7 @@ If `claude` is not on your PATH, the desktop app bundles one at
 Register the dev folder instead of GitHub:
 
 ```text
-/plugin marketplace add C:\Users\Tobi\Documents\claude-tbd
+/plugin marketplace add C:\Users\Tobi\Documents\tbd
 /plugin install tbd@toastgeraet
 ```
 
