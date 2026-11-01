@@ -17,15 +17,22 @@ a cache under `~/.claude/plugins/` and replaces that copy on every update, so ed
 there are silently lost. If this skill's base directory is under
 `~/.claude/plugins/`, you are looking at the cache.
 
+**Changes go through a pull request.** The `/tbd:contribute` skill does the whole
+round: it collects what a session learned, lets the user pick, edits on a
+`contribute/<topic>` branch and opens the PR. By hand:
+
 ```bash
 DEV=~/Documents/tbd        # wherever the dev repo is cloned
-git -C "$DEV" status
+git -C "$DEV" fetch
+git -C "$DEV" switch -c contribute/<topic> origin/main
+# edit, then
 git -C "$DEV" add -A
 git -C "$DEV" commit -m "scaffold/<stack-id>: <what changed>"
+git -C "$DEV" push -u origin contribute/<topic>
 ```
 
-Ask the user before editing, and push only when asked. Once pushed, every machine
-picks the change up with `/plugin marketplace update toastgeraet`, or by itself if
+Never push to `main` directly. Once the user merges the PR, every machine picks
+the change up with `/plugin marketplace update toastgeraet`, or by itself if
 auto-update is on for the marketplace.
 
 ## What belongs here
@@ -127,8 +134,8 @@ the stack this project uses as a new stack in that skill, id `<stack-id>`:
 - Never copy secrets; record where they live instead.
 - Update the stack's row in the SKILL.md index.
 
-Show me the changes before committing them in the dev repo.
+Show me the changes, then open a pull request as /tbd:contribute describes.
 ```
 
-For the reading tracker, use the id `expo-android`. Its row already exists in the
-index, marked "not yet written up".
+For learnings that are smaller than a whole stack, `/tbd:contribute` alone is
+enough.

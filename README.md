@@ -5,9 +5,11 @@ each one grows as projects teach it something.
 
 | Skill | What it does |
 | --- | --- |
-| `/tbd:scaffold` | Asks what you want to build — Android app, Godot game, both, web project, service — and sets it up from a stack that has already been proven. Godot is proven (desktop, web, headless tests); Expo Android is proven in the reading tracker but not written up yet. |
+| `/tbd:scaffold` | Asks what you want to build — Android app, Godot game, both, web project, service — and sets it up from a stack that has already been proven: Godot (desktop, web, headless tests) and Expo Android (EAS builds, OTA updates from cloud sessions). |
+| `/tbd:contribute` | Looks back over the current session for anything worth adding to these skills, lets you pick, and opens a pull request here with it. |
 
-You don't need to type the command: "start a new Godot game" triggers it too.
+You don't need to type the commands: "start a new Godot game" or "anything from
+this session worth adding to tbd?" trigger them too.
 
 ## Install
 
@@ -32,8 +34,12 @@ machine with **no** GitHub SSH key, set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`,
 because installs and updates started inside a session don't fall back to HTTPS on
 their own.
 
-If `claude` is not on your PATH, the desktop app bundles one at
-`%APPDATA%\Claude\claude-code\<version>\<hash>\claude.exe`.
+The `claude` command comes with the standalone CLI, not with the desktop app. On
+Windows, install it with `irm https://claude.ai/install.ps1 | iex` and open a new
+terminal; it shares `~/.claude` with the desktop app, so plugins and settings
+apply to both. The desktop app's own copy,
+`%APPDATA%\Claude\claude-code\<version>\<hash>\claude.exe`, is not on PATH and
+moves with every app update.
 
 ### Cloud sessions
 
@@ -41,7 +47,7 @@ If `claude` is not on your PATH, the desktop app bundles one at
 plugin you install yourself — neither one installed on your machine nor one a
 repository's `.claude/settings.json` declares. The options for getting the skills
 there, none tried yet, are in
-[plugins/tbd/skills/scaffold/reference/claude-cloud.md](plugins/tbd/skills/scaffold/reference/claude-cloud.md#getting-this-skill-into-a-cloud-session).
+[plugins/tbd/skills/scaffold/reference/claude-cloud.md](plugins/tbd/skills/scaffold/reference/claude-cloud.md#using-the-skill-in-a-cloud-session).
 
 ### Optional: load from a local clone
 
@@ -85,6 +91,9 @@ an update. If you ever add a `version`, nobody receives a change until you bump 
 
 ## Develop
 
+- Changes go through pull requests: `/tbd:contribute` in any session collects
+  what it learned and opens one. Merging is the review step — with auto-update,
+  a merge reaches every machine.
 - Skills live in `plugins/tbd/skills/<name>/SKILL.md`. A new folder there
   becomes `/tbd:<name>`; add it to the table above.
 - Each skill can have its own contributing guide. The scaffold skill's is
@@ -93,8 +102,10 @@ an update. If you ever add a `version`, nobody receives a change until you bump 
 - **Edit this repository, never the installed copy** in `~/.claude/plugins/` —
   updates replace it.
 - Check the structure after changes: `claude plugin validate .` and
-  `claude plugin validate ./plugins/tbd`. Expect exactly one warning, "No version
-  specified" — that is the deliberate choice above.
+  `claude plugin validate ./plugins/tbd`. Expect the warning "No version
+  specified" — that is the deliberate choice above — and, from CLI 2.1.3xx on,
+  plugin-directory warnings such as a missing icon, which only matter for a
+  submission to Anthropic's plugin directory.
 - Try a change without installing anything:
   `claude --plugin-dir ./plugins/tbd plugin details tbd` lists the skills it finds.
 
@@ -104,4 +115,5 @@ an update. If you ever add a `version`, nobody receives a change until you bump 
 .claude-plugin/marketplace.json     the marketplace "toastgeraet"
 plugins/tbd/.claude-plugin/plugin.json
 plugins/tbd/skills/scaffold/        SKILL.md, CONTRIBUTING.md, stacks/, reference/
+plugins/tbd/skills/contribute/      SKILL.md
 ```
