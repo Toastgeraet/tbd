@@ -46,9 +46,11 @@ GitHub. The `expo-android` stack was built almost entirely this way; its
   to the same repo worked. Check with `git ls-remote --tags origin`. Make the tag
   on the user's PC (`git tag -a vX.Y.Z <sha> -m …` + `git push origin vX.Y.Z`) or
   on GitHub's *Draft a new release* page.
-- **`gh` may have no working login.** In rechen-trainer's container `gh auth
-  status` reported "The token in GH_TOKEN is invalid", so `gh api` was
-  unavailable as well. **proven** for that session.
+- **Ignore `gh auth status`.** In rechen-trainer's container it reported "The
+  token in GH_TOKEN is invalid", yet `gh api repos/<owner>/<repo>/pulls -f …`
+  opened a pull request on an attached repository. The proxy supplies the
+  credentials. **proven** (2026-11-01). Try the call instead of trusting the
+  status.
 - **Preinstalled** (reading-tracker's container): Node 22.22, npm 10.9, Python 3,
   Playwright 1.56.1 under `/opt/node-tools`, Chromium under `/opt/pw-browsers`
   (don't run `playwright install`). Enough for headless browser screenshots of

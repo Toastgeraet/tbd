@@ -73,8 +73,8 @@ file in `templates/` and upgrade the status.
 
 - The `d3d12` rendering-device setting is Windows-only and ignored on Linux.
 - Tool paths in the README's environment table are for Windows. In the cloud
-  container (2026-11-01): Java 21 (OpenJDK) preinstalled, no Android SDK, `gh`
-  present but its token was invalid.
+  container (2026-11-01): Java 21 (OpenJDK) preinstalled, no Android SDK. `gh
+  auth status` claimed an invalid token, but `gh api` (REST) worked.
 - **Tags can't be pushed** from the session (HTTP 403 from the git proxy;
   branches push fine). Release tags are made on the PC or on GitHub's release
   page. See [claude-cloud.md](../../reference/claude-cloud.md).
