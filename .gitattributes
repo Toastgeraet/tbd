@@ -1,0 +1,2 @@
+# LF everywhere, including the PowerShell scripts (PowerShell 5.1 reads LF fine).
+* text=auto eol=lf
