@@ -1,7 +1,7 @@
 # Claude cloud sessions — what they can and cannot do
 
 > **Status:** proven where marked (from reading-tracker, Expo, 2026-10-06 to
-> 2026-11-01) · researched otherwise — the researched parts were checked against
+> 2026-11-01, and rechen-trainer, Godot, 2026-11-01) · researched otherwise — the researched parts were checked against
 > the Claude Code docs on 2026-11-01 (code.claude.com: cloud-environments,
 > plugins/install, plugins/loading, skills) · **Last checked:** 2026-11-01
 
@@ -40,7 +40,17 @@ GitHub. The `expo-android` stack was built almost entirely this way; its
   (`github.com/<owner>/<repo>/archive/…`, `codeload.github.com`) of unattached
   repositories are refused even when public. `gh` is pre-installed, but GraphQL
   subcommands (`gh pr`, `gh issue`) are refused; `gh api` (REST) works.
-  *researched*
+  *researched* — except: **tag pushes are refused**, **proven** (rechen-trainer,
+  2026-11-01): `git push origin v0.1.0` gave `RPC failed; HTTP 403` and then
+  printed "Everything up-to-date", which looks like success, while branch pushes
+  to the same repo worked. Check with `git ls-remote --tags origin`. Make the tag
+  on the user's PC (`git tag -a vX.Y.Z <sha> -m …` + `git push origin vX.Y.Z`) or
+  on GitHub's *Draft a new release* page.
+- **Ignore `gh auth status`.** In rechen-trainer's container it reported "The
+  token in GH_TOKEN is invalid", yet `gh api repos/<owner>/<repo>/pulls -f …`
+  opened a pull request on an attached repository. The proxy supplies the
+  credentials. **proven** (2026-11-01). Try the call instead of trusting the
+  status.
 - **Preinstalled** (reading-tracker's container): Node 22.22, npm 10.9, Python 3,
   Playwright 1.56.1 under `/opt/node-tools`, Chromium under `/opt/pw-browsers`
   (don't run `playwright install`). Enough for headless browser screenshots of
@@ -59,7 +69,7 @@ GitHub. The `expo-android` stack was built almost entirely this way; its
 | Repo `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/` | Yes — part of the clone (a *project's* cloud threads load less) |
 | Repo `.claude/settings.json` hooks and permissions, `.mcp.json` | Yes, in a session with one repository |
 | Plugins and marketplaces declared in the repo's `.claude/settings.json` | **No** — this needs the workspace-trust dialog, which cloud sessions never show |
-| Plugins installed on your machine (`~/.claude/settings.json`) | **No** |
+| Plugins installed on your machine (`~/.claude/settings.json`) | **No** — but see the observation below |
 | Your `~/.claude/CLAUDE.md` and `~/.claude/skills/` | **No** — they live on your machine |
 | Skills enabled on your claude.ai account | **Yes**, synced at session start |
 | Organisation server-managed settings, including plugins | Yes — needs a Team/Enterprise Owner |
@@ -90,7 +100,8 @@ to the user's device.
 | Stack | Session does | Heavy build runs on | Delivery |
 | --- | --- | --- | --- |
 | `expo-android` (**proven**) | edit, test, web-preview screenshots, push, start builds and OTA publishes via the Expo connector | Expo EAS (builds and update workflows) | APK link on the phone, then over-the-air updates |
-| Godot (researched) | edit, headless import + tests, push | GitHub Actions | APK artifact or release |
+| Godot (**proven** without CI) | download Godot, edit, headless import + tests, probes and Xvfb screenshots, push | the user's PC, from the editor | Remote Deploy over wireless adb; APK attached to a GitHub Release |
+| Godot (researched with CI) | same | GitHub Actions | APK artifact or release |
 
 A cheap gate in GitHub Actions (tests, typecheck, lint on every push) before
 anything ships to phones costs nothing in the build service's queue. **proven**
@@ -126,9 +137,23 @@ project, edit and commit there. The `expo-android` stack was written up this way
 
 ### Using the skill in a cloud session
 
-This skill ships in the `tbd` plugin, and by the table above **a plugin you
-install yourself never reaches a cloud session** — not from your machine, not
-from a repository's settings. Options, none tried yet:
+**Observed, contradicting the table** (rechen-trainer, 2026-11-01): in a cloud
+session started with no repository, `tbd:scaffold` was available and loaded.
+The container's user-scope `~/.claude/settings.json` declared the `toastgeraet`
+marketplace and `"enabledPlugins": {"tbd@toastgeraet": true}`. The file was
+written at container start, and the plugin was installed into
+`~/.claude/plugins/cache/` at that moment, **pinned to the then-latest commit**.
+So something installs the plugin per session. *Which* mechanism (account-level
+plugin sync, the environment's configuration, or something else) wasn't
+identified. Find out before relying on it, then rewrite this section and the
+table. Practical consequences seen:
+
+- The installed copy can lag `main` (here by two commits, including a changed
+  contribution process). For contributing, read the dev repo's `origin/main`,
+  not the cache.
+- The `/tbd:contribute` skill wasn't in that copy yet, but the dev repo had it.
+
+Options considered before this was observed, none tried yet:
 
 1. **Enable the skill on your claude.ai account** — upload it via *Customize* in
    the desktop app's sidebar, or claude.ai's skill settings. This is the

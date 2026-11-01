@@ -1,9 +1,9 @@
 # Godot — Claude cloud sessions and CI builds
 
-> **Status:** researched · **Last checked:** 2026-11-01 · **Proven in:** —
+> **Status:** proven (editing, import, tests, probes, screenshots in a cloud session) · researched (APK builds in the cloud or CI) · **Last checked:** 2026-11-01 · **Proven in:** rechen-trainer (built from an empty repo in a cloud session; the APK was exported on the PC)
 
-How a Godot project could be developed in a Claude cloud session connected to
-GitHub, and built without the user's PC. Nothing here has been run. General cloud
+How a Godot project is developed in a Claude cloud session connected to GitHub,
+and how it could be built without the user's PC. General cloud
 facts are in [../../reference/claude-cloud.md](../../reference/claude-cloud.md).
 
 ## What a cloud session can do
@@ -13,11 +13,13 @@ Linux Godot build runs there; use `--headless` throughout.
 
 | Task | Works? | Notes |
 | --- | --- | --- |
-| Editing GDScript, scenes, shaders | Yes | Plain text files. |
-| Import, error checks, test suite | Yes | The commands in [verification.md](verification.md), with the Linux binary. A fresh clone has no `.godot/`, so `--import` must run first. |
+| Getting Godot | **proven** | `curl -sSL -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip` (78 MB) went through the proxy. Unzip into the scratchpad, not the repo. |
+| Editing GDScript, scenes, shaders | **proven** | Plain text files. Hand-written `.tscn` (format=3, no `uid`) imported fine. |
+| Import, error checks, test suite | **proven** | The commands in [verification.md](verification.md), with the Linux binary. A fresh clone has no `.godot/`, so `--import` must run first. |
 | Web export | Yes | Needs the export templates in the container. |
-| Android APK export | Yes, with setup | Needs JDK 17, the Android SDK and templates. Headless Android exports on Linux are a well-trodden CI path. |
-| Screenshots | Probably | No GPU. Godot under a virtual display (Xvfb) with Mesa's software OpenGL (llvmpipe) should render; GL Compatibility is the easiest renderer for it. Unverified. |
+| Android APK export | *researched* | Needs JDK 17, the Android SDK and templates. Headless Android exports on Linux are a well-trodden CI path. |
+| Screenshots | **proven** | `xvfb-run` was preinstalled; GL Compatibility rendered correctly in software. Command in [verification.md](verification.md#screenshots-on-linux-without-a-display). |
+| Physics tuning probes | **proven** | Headless with `--fixed-fps 60` runs faster than real time. |
 | Running on a device or emulator | No | The emulator needs hardware virtualisation (KVM), which containers usually lack. Testing on a phone stays with the user. |
 
 **Downloads are the practical problem.** The template bundle alone is about
@@ -26,6 +28,13 @@ session's network access level may need to allow the Godot and Google download
 hosts.
 
 ## Recommended split
+
+**proven, the simplest route (rechen-trainer):** the session does everything up to
+a pushed commit, and the user exports on the PC from the editor (Remote Deploy to
+the phone, or *Export Project…* for an APK file). The handover is the step list
+in [android-export.md](android-export.md). No CI needed.
+
+**researched, the route without the PC:**
 
 Mirror what Expo does with EAS: keep the heavy native build out of the session.
 
@@ -63,6 +72,10 @@ file in `templates/` and upgrade the status.
 ## Project-specific notes
 
 - The `d3d12` rendering-device setting is Windows-only and ignored on Linux.
-- Tool paths in the README's environment table are for Windows. Record the Linux
-  ones here once known.
+- Tool paths in the README's environment table are for Windows. In the cloud
+  container (2026-11-01): Java 21 (OpenJDK) preinstalled, no Android SDK. `gh
+  auth status` claimed an invalid token, but `gh api` (REST) worked.
+- **Tags can't be pushed** from the session (HTTP 403 from the git proxy;
+  branches push fine). Release tags are made on the PC or on GitHub's release
+  page. See [claude-cloud.md](../../reference/claude-cloud.md).
 - `.uid` files must be committed; the templates and the editor both rely on them.
